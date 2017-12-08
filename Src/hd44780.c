@@ -7,7 +7,10 @@
 
 #include "hd44780.h"
 
-uint32_t PCF8574_Type0Pins[8] = { 4, 5, 6, 7, 0, 1, 2, 3 };
+//uint32_t PCF8574_Type0Pins[8] = { 4, 5, 6, 7, 0, 1, 2, 3 };
+
+//other I²C LCD converter (small SMD potentiometer)
+uint32_t PCF8574_Type0Pins[8] = { 0, 1, 2, 3, 6, 5, 4, 7 }; 
 uint8_t LCDerrorFlag = 0;
 
 void LCD_WaitForBusyFlag(LCD_PCF8574_HandleTypeDef* handle) {
