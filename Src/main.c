@@ -111,7 +111,8 @@ uint8_t data_ready = 0;
 /* USER CODE END PV */
 uint8_t rx_count = 0;
 uint32_t timeout = 0;
-
+#define RC_THRESH 150 //threshhold of PPM timing which is considered valid (850-2150)
+/*
 void PPM_ISR_Callback() {
   // Dummy loop with 16 bit count wrap around
   uint16_t rc_delay = TIM2->CNT;
@@ -125,6 +126,28 @@ void PPM_ISR_Callback() {
     captured_value[rx_count] = CLAMP(rc_delay, 1000, 2000) - 1000;
     rx_count++;
   }
+  _init_us();
+}*/
+
+void PPM_ISR_Callback() {
+  // Dummy loop with 16 bit count wrap around
+  uint16_t rc_delay = TIM2->CNT;
+  _stop_timer(); //should take a few 100 ns, because of function calls
+
+  //read GPIO a few 100 ns later to check if actual high pulse of PPM or just noise
+  bool ppmState = GPIOA->IDR & GPIO_PIN_2;
+  
+  if (rc_delay > 3000) {
+    rx_count = 0;
+  }
+  else if(ppmState && rx_count < 6){
+    if (rc_delay + RC_THRESH > 1000 && rc_delay - RC_THRESH < 2000) { //check if pulse time is valid
+      timeout = 0;
+      captured_value[rx_count] = CLAMP(rc_delay, 1000, 2000) - 1000;
+      rx_count++;
+    }
+  }  
+	
   _init_us();
 }
 
