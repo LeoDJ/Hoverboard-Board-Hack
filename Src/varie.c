@@ -2,6 +2,8 @@
 #include "stm32f1xx_hal.h"
 #include "delay.h"
 
+volatile uint32_t lastValueReceivedTime = 0;
+
 extern IWDG_HandleTypeDef hiwdg;
 
 void Buzzer_init(void){

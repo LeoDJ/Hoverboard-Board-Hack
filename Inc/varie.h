@@ -39,6 +39,9 @@
    void DebugPin5_OFF(void);
    extern void Error_Handler(void);
 
+   extern volatile uint32_t lastValueReceivedTime;
+
+
 
 #ifdef __cplusplus
 }

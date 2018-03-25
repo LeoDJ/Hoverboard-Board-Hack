@@ -40,7 +40,7 @@
 #include "pid.h"
 
 /* USER CODE BEGIN 0 */
-
+//extern volatile uint32_t lastValueReceivedTime;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -271,7 +271,7 @@ void DMA1_Channel5_IRQHandler(void)
 void DMA1_Channel6_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel6_IRQn 0 */
-
+  lastValueReceivedTime = HAL_GetTick();
   /* USER CODE END DMA1_Channel6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_usart2_rx);
   /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */

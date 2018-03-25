@@ -143,6 +143,8 @@ int main(void)
   MotorR_start();
   MotorL_start();
 
+  Console_Log("Otter!");
+
   uint32_t sinValue = 0;
   int lastSpeedL = 0, lastSpeedR = 0;
   while(1){
@@ -156,7 +158,7 @@ int main(void)
       Power_Set(0);
     }
 
-    if ((sinValue) % (200) == 0) {
+    if ((sinValue) % (200) == 0) { //apply new motor speeds from DMA UART
       int speedL = -CLAMP(getMotorR(), -1000, 1000);
       int speedR = -CLAMP(getMotorL(), -1000, 1000);
       if (speedL != lastSpeedL || speedR != lastSpeedR) {
@@ -181,7 +183,7 @@ int main(void)
     //Telemetry_TASK();
 
     //Batteria Scarica?
-    if(ABS(getMotorCurrentR() * 0.02) > 20.0 || ABS(getMotorCurrentL() * 0.02) > 20.0){
+    if(ABS(getMotorCurrentR() * 0.02) > 20.0 || ABS(getMotorCurrentL() * 0.02) > 20.0){ //over current protection
       Console_Log("overcurrent\r\n");
       MotorL_pwm(0);
       MotorR_pwm(0);
@@ -189,13 +191,20 @@ int main(void)
       HAL_Delay(350);
       Power_Set(0);
     }
-    if(GET_BatteryAverage() < 31.0){
+    if(GET_BatteryAverage() < 28.0){ //undervoltage protection
       Console_Log("undervoltage\r\n");
       MotorL_pwm(0);
       MotorR_pwm(0);
       Buzzer_OneLongBeep();
       HAL_Delay(350);
       Power_Set(0);
+    }
+    if(lastValueReceivedTime + 500 < HAL_GetTick()) { //timeout when no commands were received for a time
+      Console_Log("timeout\r\n");
+      MotorL_pwm(0);
+      MotorR_pwm(0);
+      lastValueReceivedTime = HAL_GetTick(); //reset time, so it only beeps 2 times per second
+      Buzzer_OneShortBeep();
     }
     //In Carica?
     /*if(IS_Charge()==0){
